@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mis Medicamentos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body {
+    background: linear-gradient(to right, #e8f5e9, #ffffff);
+  }
+  .card-header {
+    background: #2e7d32;
+  }
+  .table thead {
+    background-color: #c8e6c9;
+  }
+</style>
+</head>
+<body>
+<div class="container mt-5">
+  <div class="card shadow-lg border-0">
+    <div class="card-header text-white text-center">
+      <h4 class="mb-0">Medicamentos Recetados</h4>
+    </div>
+    <div class="card-body">
+      <div class="row g-3 align-items-end mb-3">
+        <div class="col-md-6">
+          <label class="form-label">Ingrese su Cédula</label>
+          <input type="text" id="cedulaPaciente" class="form-control" placeholder="Ej: 1-2345-0678">
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-success w-100" onclick="buscarMedicamentos()">
+            <i class="bi bi-search"></i> Buscar
+          </button>
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-secondary w-100" onclick="limpiarBusqueda()">
+            <i class="bi bi-eraser"></i> Limpiar
+          </button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Medicamento</th>
+              <th>Dosis</th>
+              <th>Indicaciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaPaciente">
+            <tr>
+              <td colspan="3" class="text-center text-muted">Ingrese su cédula y presione buscar.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-footer text-center text-muted small">
+      Sistema Médico © 2025
+    </div>
+  </div>
+</div>
+
+<script>
+function buscarMedicamentos() {
+  const cedula = document.getElementById("cedulaPaciente").value.trim();
+  const medicamentos = JSON.parse(localStorage.getItem("medicamentos") || "[]");
+  const tabla = document.getElementById("tablaPaciente");
+  tabla.innerHTML = "";
+
+  if (!cedula) {
+    tabla.innerHTML = `<tr><td colspan="3" class="text-center text-warning">Por favor ingrese una cédula.</td></tr>`;
+    return;
+  }
+
+  const filtrados = medicamentos.filter(m => m.cedula === cedula);
+
+  if (filtrados.length === 0) {
+    tabla.innerHTML = `<tr><td colspan="3" class="text-center text-muted">No se encontraron medicamentos para esta cédula.</td></tr>`;
+    return;
+  }
+
+  filtrados.forEach(med => {
+    tabla.innerHTML += `
+      <tr>
+        <td>${med.medicamento}</td>
+        <td>${med.dosis}</td>
+        <td>${med.indicaciones}</td>
+      </tr>
+    `;
+  });
+}
+
+function limpiarBusqueda() {
+  document.getElementById("cedulaPaciente").value = "";
+  document.getElementById("tablaPaciente").innerHTML = `
+    <tr>
+      <td colspan="3" class="text-center text-muted">Ingrese su cédula y presione buscar.</td>
+    </tr>
+  `;
+}
+</script>
+
+<!-- Bootstrap Icons -->

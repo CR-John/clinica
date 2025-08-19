@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestionar Diagnósticos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <div class="card shadow-sm">
+      <div class="card-header bg-info text-white text-center">
+        <h4>Gestionar Diagnósticos</h4>
+      </div>
+      <div class="card-body">
+        
+        <!-- Formulario para nuevo diagnóstico -->
+        <h5>Registrar Nuevo Diagnóstico</h5>
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Nombre del Paciente</label>
+            <input type="text" class="form-control" placeholder="Ej: Juan Pérez" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Cédula del Paciente</label>
+            <input type="text" class="form-control" placeholder="Ej: 1-2345-6789" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Diagnóstico</label>
+            <textarea class="form-control" rows="3" placeholder="Escriba el diagnóstico..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-info text-white">Guardar Diagnóstico</button>
+        </form>
+
+        <hr>
+
+        <!-- Lista de diagnósticos previos -->
+        <h5>Historial de Diagnósticos</h5>
+        <table class="table table-striped table-hover">
+          <thead class="table-info">
+            <tr>
+              <th>Fecha</th>
+              <th>Paciente</th>
+              <th>Diagnóstico</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>12/08/2025</td>
+              <td>Juan Pérez</td>
+              <td>Gripe Común</td>
+            </tr>
+            <tr>
+              <td>10/08/2025</td>
+              <td>María López</td>
+              <td>Hipertensión</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <a href="panel_medico.html" class="btn btn-secondary">Volver al Panel</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

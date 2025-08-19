@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Centros Médicos</title>
+  <!-- Adaptación para dispositivos móviles -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Carga CSS de Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Espaciado entre botones de acción (editar/eliminar) */
+    .acciones button {
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+<!-- Contenedor principal -->
+<div class="container mt-5">
+  <div class="card shadow-sm">
+    
+    <!-- Encabezado del panel -->
+    <div class="card-header bg-primary text-white text-center">
+      <h4>Gestión de Clínicas / EBAIS por Localidad</h4>
+    </div>
+
+    <div class="card-body">
+
+      <!-- Tabla de centros ya registrados -->
+      <div class="table-responsive mb-4">
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>Centro Médico</th>
+              <th>Localidad</th>
+              <th>Apertura</th>
+              <th>Cierre</th>
+              <th>Citas/hora</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaCentros">
+            <!-- Centros precargados -->
+            <tr>
+              <td>Clínica Central</td>
+              <td>San Ignacio</td>
+              <td>08:00</td>
+              <td>14:00</td>
+              <td>2</td>
+              <td class="acciones">
+                <button class="btn btn-sm btn-outline-warning">Editar</button>
+                <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+              </td>
+            </tr>
+            <tr>
+              <td>EBAIS Las Rosas</td>
+              <td>San José Norte</td>
+              <td>09:00</td>
+              <td>15:00</td>
+              <td>2</td>
+              <td class="acciones">
+                <button class="btn btn-sm btn-outline-warning">Editar</button>
+                <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Formulario para agregar un nuevo centro -->
+      <h5 class="text-center mb-3">Agregar Nuevo Centro Médico</h5>
+      <form id="formCentro" class="row g-3">
+        <!-- Campo: nombre del centro -->
+        <div class="col-md-4">
+          <label for="nombreCentro" class="form-label">Nombre del Centro</label>
+          <input type="text" class="form-control" id="nombreCentro" required>
+        </div>
+        <!-- Campo: localidad -->
+        <div class="col-md-4">
+          <label for="localidad" class="form-label">Localidad</label>
+          <input type="text" class="form-control" id="localidad" required>
+        </div>
+        <!-- Campo: hora de apertura -->
+        <div class="col-md-2">
+          <label for="horaInicio" class="form-label">Hora Apertura</label>
+          <input type="time" class="form-control" id="horaInicio" required>
+        </div>
+        <!-- Campo: hora de cierre -->
+        <div class="col-md-2">
+          <label for="horaFin" class="form-label">Hora Cierre</label>
+          <input type="time" class="form-control" id="horaFin" required>
+        </div>
+        <!-- Campo: número de citas por hora -->
+        <div class="col-md-2">
+          <label for="citasPorHora" class="form-label">Citas/Hora</label>
+          <input type="number" class="form-control" id="citasPorHora" value="2" min="1" max="10" required>
+        </div>
+        <!-- Botón para agregar centro -->
+        <div class="col-12 d-grid mt-3">
+          <button type="submit" class="btn btn-success">Agregar Centro</button>
+        </div>
+      </form>
+      <div id="mensajeCentro" class="mt-3 text-center"></div>
+    </div>
+
+    <!-- Pie del panel -->
+    <div class="card-footer text-center">
+      <a href="panel_administrador.html" class="btn btn-outline-secondary">Volver al Panel</a>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+
+<!-- Carga Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script para agregar centros dinámicamente a la tabla -->
+<script>
+  document.getElementById("formCentro").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    // Obtener valores del formulario
+    const nombre = document.getElementById("nombreCentro").value;
+    const localidad = document.getElementById("localidad").value;
+    const inicio = document.getElementById("horaInicio").value;
+    const cierre = document.getElementById("horaFin").value;
+    const citas = document.getElementById("citasPorHora").value;
+
+    // Crear nueva fila
+    const fila = document.createElement("tr");
+    fila.innerHTML = `
+      <td>${nombre}</td>
+      <td>${localidad}</td>
+      <td>${inicio}</td>
+      <td>${cierre}</td>
+      <td>${citas}</td>
+      <td class="acciones">
+        <button class="btn btn-sm btn-outline-warning">Editar</button>
+        <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+      </td>
+    `;
+    document.getElementById("tablaCentros").appendChild(fila);
+
+    // Mostrar mensaje de éxito y resetear formulario
+    document.getElementById("mensajeCentro").textContent = "✅ Centro agregado correctamente.";
+    document.getElementById("mensajeCentro").classList.add("text-success");
+    this.reset();
+  });
+</script>
+
+<!-- Script para editar centros existentes -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const tabla = document.getElementById("tablaCentros");
+
+    tabla.addEventListener("click", function (e) {
+      if (e.target.classList.contains("btn-outline-warning")) {
+        const fila = e.target.closest("tr");
+        const celdas = fila.querySelectorAll("td");
+
+        // Extraer valores de la fila
+        const nombreCentro = celdas[0].textContent;
+        const localidad = celdas[1].textContent;
+        const apertura = celdas[2].textContent;
+        const cierre = celdas[3].textContent;
+        const citas = celdas[4].textContent;
+
+        // Insertar datos en el formulario
+        document.getElementById("nombreCentro").value = nombreCentro;
+        document.getElementById("localidad").value = localidad;
+        document.getElementById("horaInicio").value = apertura;
+        document.getElementById("horaFin").value = cierre;
+        document.getElementById("citasPorHora").value = citas;
+
+        // Elimina la fila original para sustituirla
+        fila.remove();
+
+        // Mostrar mensaje de edición
+        const mensaje = document.getElementById("mensajeCentro");
+        mensaje.textContent = "✏️ Centro listo para editar. Modifica los campos y presiona 'Agregar Centro'.";
+        mensaje.classList.remove("text-success");
+        mensaje.classList.add("text-warning");
+      }
+    });
+  });
+</script>
+
+<!-- Script para eliminar centros -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const tabla = document.getElementById("tablaCentros");
+
+    tabla.addEventListener("click", function (e) {
+      if (e.target.classList.contains("btn-outline-danger")) {
+        const fila = e.target.closest("tr");
+
+        // Confirmación previa
+        if (confirm("¿Estás segura que deseas eliminar este centro?")) {
+          fila.remove();
+
+          // Mostrar mensaje de eliminación
+          const mensaje = document.getElementById("mensajeCentro");
+          mensaje.textContent = "🗑️ Centro eliminado correctamente.";
+          mensaje.className = "text-danger text-center mt-2";
+        }
+      }
+    });
+  });
+</script>

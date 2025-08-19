@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Emitir Comprobante Médico</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Oculta botones durante la impresión -->
+  <style>
+    @media print {
+      .no-imprimir {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+  <!-- Contenedor general del formulario -->
+  <div class="container mt-5">
+    <div class="card shadow-sm">
+      
+      <!-- Encabezado del panel -->
+      <div class="card-header bg-dark text-white text-center">
+        <h4>Generar Comprobante Médico</h4>
+      </div>
+
+      <div class="card-body">
+        <!-- Formulario que se autocompleta según el paciente -->
+        <form id="formComprobante">
+          
+          <!-- Fila: selección de cédula y muestra de nombre -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="cedula" class="form-label">Seleccionar paciente (Cédula)</label>
+              <select class="form-select" id="cedula" required>
+                <option value="">Seleccione...</option>
+                <option value="123456789">123456789 — Carlos Herrera</option>
+                <option value="987654321">987654321 — María González</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Nombre del Paciente</label>
+              <p id="paciente" class="form-control-plaintext">—</p>
+            </div>
+          </div>
+
+          <!-- Fila: servicio médico y nombre del médico -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="servicio" class="form-label">Servicio Médico</label>
+              <input type="text" class="form-control" id="servicio" readonly required>
+            </div>
+            <div class="col-md-6">
+              <label for="medico" class="form-label">Profesional Médico</label>
+              <input type="text" class="form-control" id="medico" readonly required>
+            </div>
+          </div>
+
+          <!-- Fila: fecha, hora y monto -->
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label for="fecha" class="form-label">Fecha</label>
+              <input type="date" class="form-control" id="fecha" readonly required>
+            </div>
+            <div class="col-md-4">
+              <label for="hora" class="form-label">Hora</label>
+              <input type="time" class="form-control" id="hora" readonly required>
+            </div>
+            <div class="col-md-4">
+              <label for="monto" class="form-label">Monto (₡)</label>
+              <input type="number" class="form-control" id="monto" readonly required>
+            </div>
+          </div>
+
+          <!-- Botones: generar e imprimir comprobante -->
+          <div class="d-grid gap-2 no-imprimir">
+            <button type="submit" class="btn btn-success">Generar Comprobante</button>
+            <button type="button" class="btn btn-outline-primary" onclick="window.print()">Imprimir Comprobante</button>
+          </div>
+        </form>
+
+        <!-- Aquí se mostrará el comprobante generado -->
+        <div id="comprobanteGenerado" class="mt-4"></div>
+      </div>
+
+      <!-- Botón de regreso -->
+      <div class="card-footer text-center no-imprimir">
+        <a href="panel_administrador.html" class="btn btn-outline-secondary">Volver al Panel</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (necesario para interacciones de UI) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Simulación de base de datos de citas médicas -->
+  <script>
+    const citas = {
+      "123456789": {
+        paciente: "Carlos Herrera",
+        servicio: "Consulta General",
+        medico: "Dr. Luis Gómez",
+        fecha: "2024-07-23",
+        hora: "09:00",
+        monto: "5000"
+      },
+      "987654321": {
+        paciente: "María González",
+        servicio: "Evaluación Cardiológica",
+        medico: "Dra. Carla Méndez",
+        fecha: "2024-07-24",
+        hora: "11:30",
+        monto: "8000"
+      }
+    };
+
+    // Al cambiar la cédula, se autocompletan los campos
+    document.getElementById("cedula").addEventListener("change", function () {
+      const cedula = this.value;
+      if (citas[cedula]) {
+        const datos = citas[cedula];
+        document.getElementById("paciente").textContent = datos.paciente;
+        document.getElementById("servicio").value = datos.servicio;
+        document.getElementById("medico").value = datos.medico;
+        document.getElementById("fecha").value = datos.fecha;
+        document.getElementById("hora").value = datos.hora;
+        document.getElementById("monto").value = datos.monto;
+      } else {
+        // Si no existe el paciente, limpiar campos
+        document.getElementById("paciente").textContent = "—";
+        document.getElementById("servicio").value = "";
+        document.getElementById("medico").value = "";
+        document.getElementById("fecha").value = "";
+        document.getElementById("hora").value = "";
+        document.getElementById("monto").value = "";
+      }
+    });
+
+    // Al presionar "Generar Comprobante" se crea el documento
+    document.getElementById("formComprobante").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const paciente = document.getElementById("paciente").textContent;
+      const cedula = document.getElementById("cedula").value;
+      const servicio = document.getElementById("servicio").value;
+      const medico = document.getElementById("medico").value;
+      const fecha = document.getElementById("fecha").value;
+      const hora = document.getElementById("hora").value;
+      const monto = document.getElementById("monto").value;
+
+      // HTML para mostrar comprobante en pantalla
+      const comprobante = `
+        <div class="border p-3 bg-white">
+          <h5 class="text-center">📄 Comprobante Médico</h5>
+          <p><strong>Paciente:</strong> ${paciente}</p>
+          <p><strong>Cédula:</strong> ${cedula}</p>
+          <p><strong>Servicio:</strong> ${servicio}</p>
+          <p><strong>Profesional:</strong> ${medico}</p>
+          <p><strong>Fecha:</strong> ${fecha}</p>
+          <p><strong>Hora:</strong> ${hora}</p>
+          <p><strong>Monto:</strong> ₡${monto}</p>
+          <hr>
+          <p class="text-center">Gracias por utilizar nuestros servicios</p>
+        </div>
+      `;
+
+      document.getElementById("comprobanteGenerado").innerHTML = comprobante;
+    });
+  </script>
+</body>
+</html>

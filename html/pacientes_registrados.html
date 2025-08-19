@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sistema Médico — Panel del Profesional</title>
+<style>
+  :root{
+    --brand:#0ec6e6;
+    --brand-600:#03b5d6;
+    --brand-700:#0aa0be;
+    --bg:#f7fafc;
+    --card:#ffffff;
+    --text:#0f172a;
+    --muted:#64748b;
+    --danger:#ef4444;
+    --success:#22c55e;
+    --ring: 0 0 0 3px rgba(14,198,230,.15);
+    --shadow: 0 10px 30px rgba(2, 8, 23, .08);
+    --shadow-sm: 0 6px 18px rgba(2, 8, 23, .06);
+    --radius: 16px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+    background:var(--bg); color:var(--text);
+  }
+
+  /* Top bar */
+  .topbar{
+    background:var(--brand);
+    color:#fff; padding:20px 24px; text-align:center;
+    border-radius:12px; margin:16px auto 0; max-width:1200px;
+  }
+  .title{
+    margin:0; font-size:clamp(20px, 2.2vw, 28px); font-weight:800; letter-spacing:.2px;
+  }
+
+  /* Layout */
+  .wrap{max-width:1200px; margin:16px auto 48px; padding:0 16px;}
+  .welcome{
+    text-align:center; font-weight:700; margin:28px 0 12px;
+    font-size:clamp(18px, 1.8vw, 22px);
+  }
+  .grid{
+    display:grid; grid-template-columns: 280px 1fr; gap:22px;
+  }
+  @media (max-width: 900px){
+    .grid{grid-template-columns:1fr}
+  }
+
+  /* Sidebar buttons (like screenshot) */
+  .menu{
+    background:var(--card); border-radius:var(--radius); padding:18px;
+    box-shadow:var(--shadow);
+    position:sticky; top:16px; align-self:start;
+  }
+  .btn{
+    width:100%; display:block; text-align:center;
+    padding:14px 16px; margin:10px 0;
+    background:#fff; color:var(--brand-700);
+    border:2px solid rgba(14,198,230,.35);
+    border-radius:12px; font-weight:700; letter-spacing:.2px;
+    text-decoration:none; transition:.15s transform, .15s box-shadow, .15s background;
+    box-shadow:var(--shadow-sm);
+  }
+  .btn:hover{ transform: translateY(-1px); box-shadow: 0 10px 22px rgba(14,198,230,.15); }
+  .btn:active{ transform: translateY(0); }
+  .btn-danger{
+    border-color: rgba(239,68,68,.4);
+    color:#b91c1c; background:#fff5f5;
+  }
+  .sello{
+    text-align:center; color:#94a3b8; font-size:14px; margin-top:6px;
+  }
+
+  /* Content card */
+  .card{
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+  }
+  .card-header{
+    padding:18px 22px; border-bottom:1px solid #eef2f7; display:flex; align-items:center; gap:12px;
+  }
+  .card-header h2{
+    margin:0; font-size:clamp(18px, 1.8vw, 22px);
+  }
+  .pill{font-size:12px; color:#0f766e; background:#ecfeff; border:1px solid #99f6e4; padding:4px 8px; border-radius:999px}
+
+  .card-body{ padding:22px; }
+
+  /* Form */
+  .form-grid{
+    display:grid; grid-template-columns: repeat(12, 1fr); gap:14px;
+  }
+  .field{ grid-column: span 6; }
+  .field.sm{ grid-column: span 3; }
+  .field.lg{ grid-column: span 12; }
+  @media (max-width: 900px){
+    .field, .field.sm, .field.lg{ grid-column: span 12; }
+  }
+  label{
+    display:block; font-size:13px; color:var(--muted); margin:2px 2px 6px;
+  }
+  input, select, textarea{
+    width:100%; padding:12px 14px; border-radius:12px; border:1.8px solid #e5e7eb; outline:none; background:#fff;
+    transition:.15s border,.15s box-shadow;
+  }
+  textarea{ min-height:86px; resize:vertical }
+  input:focus, select:focus, textarea:focus{
+    border-color:var(--brand-600); box-shadow:var(--ring);
+  }
+  .row-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px }
+  .btn-prim{
+    background:linear-gradient(180deg, var(--brand), var(--brand-600));
+    color:#fff; border:0; padding:12px 16px; border-radius:12px; font-weight:800; cursor:pointer;
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-prim:hover{ filter: brightness(1.02); transform: translateY(-1px); }
+  .btn-ghost{
+    background:#f1f5f9; color:#0f172a; border:1px solid #e2e8f0; padding:12px 16px; border-radius:12px; font-weight:700; cursor:pointer;
+  }
+
+  /* Toolbar */
+  .toolbar{
+    display:flex; gap:10px; align-items:center; justify-content:space-between; margin:18px 0 6px; flex-wrap:wrap;
+  }
+  .search{
+    display:flex; align-items:center; gap:8px; background:#fff; border:1.8px solid #e5e7eb; border-radius:12px; padding:8px 12px; min-width:260px;
+  }
+  .search input{ border:0; outline:none; padding:6px 4px; }
+
+  /* Table */
+  .table-wrap{ overflow:auto; border:1px solid #eef2f7; border-radius:14px }
+  table{ width:100%; border-collapse:collapse; background:#fff }
+  th, td{ padding:12px 14px; border-bottom:1px solid #f1f5f9; text-align:left; font-size:14px }
+  th{ background:#f8fafc; color:#334155; position:sticky; top:0; z-index:1 }
+  tr:hover td{ background:#fafcff }
+  .tag{font-size:12px; padding:2px 8px; border-radius:999px; background:#f1f5f9; color:#0f172a; border:1px solid #e2e8f0}
+  .actions{ display:flex; gap:8px }
+  .link{ color:var(--brand-700); font-weight:700; text-decoration:none; border-bottom:1px dashed rgba(14,198,230,.5) }
+  .chip{ font-size:12px; color:#1e293b }
+
+  .footer{
+    text-align:center; color:#64748b; margin:28px 0 16px;
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <h1 class="title">Panel del Profesional Médico</h1>
+  </div>
+
+  <div class="wrap">
+    <p class="welcome">Bienvenido al Módulo Médico</p>
+
+    <div class="grid">
+      <!-- Sidebar -->
+      <aside class="menu">
+        <a class="btn" href="#horarios" onclick="noImplementado()">Administrar Horarios</a>
+        <a class="btn" href="#lista">Ver Pacientes Registrados</a>
+        <a class="btn" href="#comprobante" onclick="noImplementado()">Emitir Comprobante Médico</a>
+        <a class="btn" href="#perfil" onclick="noImplementado()">Mi Perfil Profesional</a>
+        <a class="btn btn-danger" href="#" onclick="logout(event)">Cerrar Sesión</a>
+        <div class="sello">Sistema Médico © 2025</div>
+      </aside>
+
+      <!-- Content -->
+      <main class="card">
+        <div class="card-header">
+          <h2>Registro de Pacientes</h2>
+          <span class="pill">Local · sin servidor</span>
+        </div>
+        <div class="card-body">
+          <!-- Formulario -->
+          <form id="frmPaciente" autocomplete="on">
+            <div class="form-grid">
+              <div class="field sm">
+                <label for="id">Cédula / ID *</label>
+                <input id="id" required maxlength="25" placeholder="Ej: 1-2345-0678" />
+              </div>
+              <div class="field">
+                <label for="nombre">Nombre *</label>
+                <input id="nombre" required placeholder="Nombre(s)" />
+              </div>
+              <div class="field">
+                <label for="apellidos">Apellidos *</label>
+                <input id="apellidos" required placeholder="Apellidos" />
+              </div>
+
+              <div class="field sm">
+                <label for="fechaNac">Fecha de Nacimiento *</label>
+                <input id="fechaNac" type="date" required />
+              </div>
+              <div class="field sm">
+                <label for="sexo">Sexo</label>
+                <select id="sexo">
+                  <option value="">Seleccionar…</option>
+                  <option>Femenino</option>
+                  <option>Masculino</option>
+                  <option>No especifica</option>
+                </select>
+              </div>
+              <div class="field sm">
+                <label for="telefono">Teléfono</label>
+                <input id="telefono" type="tel" placeholder="Ej: 8888-8888" pattern="[0-9\s\-+()]{7,20}" />
+              </div>
+              <div class="field">
+                <label for="correo">Correo</label>
+                <input id="correo" type="email" placeholder="correo@dominio.com" />
+              </div>
+
+              <div class="field lg">
+                <label for="direccion">Dirección</label>
+                <textarea id="direccion" placeholder="Provincia, cantón, distrito…"></textarea>
+              </div>
+
+              <div class="field sm">
+                <label for="seguro">Seguro Médico</label>
+                <select id="seguro">
+                  <option value="">Seleccionar…</option>
+                  <option>CCSS</option>
+                  <option>Privado</option>
+                  <option>Mixto</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="padecimientos">Padecimientos</label>
+                <input id="padecimientos" placeholder="Diabetes, hipertensión…" />
+              </div>
+              <div class="field">
+                <label for="alergias">Alergias</label>
+                <input id="alergias" placeholder="Penicilina, mariscos…" />
+              </div>
+
+              <div class="field sm">
+                <label for="contactoNombre">Contacto Emergencia</label>
+                <input id="contactoNombre" placeholder="Nombre del contacto" />
+              </div>
+              <div class="field sm">
+                <label for="contactoTel">Tel. Emergencia</label>
+                <input id="contactoTel" type="tel" placeholder="8888-8888" pattern="[0-9\s\-+()]{7,20}" />
+              </div>
+            </div>
+
+            <div class="row-actions">
+              <button class="btn-prim" type="submit" id="btnGuardar">Guardar Paciente</button>
+              <button class="btn-ghost" type="button" id="btnLimpiar">Limpiar</button>
+              <span class="chip" id="chipEstado"></span>
+            </div>
+          </form>
+
+          <!-- Toolbar Tabla -->
+          <div id="lista" class="toolbar">
+            <div class="search">
+              🔎
+              <input id="txtBuscar" placeholder="Buscar por nombre, cédula, correo…" />
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-ghost" type="button" id="btnExportar">Exportar JSON</button>
+              <button class="btn-ghost" type="button" id="btnBorrarTodo" title="Eliminar todos los registros">Vaciar Registros</button>
+            </div>
+          </div>
+
+          <!-- Tabla -->
+          <div class="table-wrap">
+            <table id="tbl">
+              <thead>
+                <tr>
+                  <th>Cédula</th>
+                  <th>Paciente</th>
+                  <th>Edad</th>
+                  <th>Sexo</th>
+                  <th>Teléfono</th>
+                  <th>Correo</th>
+                  <th>Seguro</th>
+                  <th style="width:140px">Acciones</th>
+                </tr>
+              </thead>
+              <tbody><!-- rows --></tbody>
+            </table>
+          </div>
+
+          <p class="footer">Los datos se guardan en tu navegador con <strong>localStorage</strong>. No se envían a ningún servidor.</p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script>
+  // ---------- Utilidades ----------
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
+  const STORAGE_KEY = "pacientes_v1";
+
+  const edadDesdeFecha = (iso) => {
+    if(!iso) return "";
+    const hoy = new Date();
+    const nac = new Date(iso);
+    let e = hoy.getFullYear() - nac.getFullYear();
+    const m = hoy.getMonth() - nac.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) e--;
+    return isNaN(e) ? "" : e;
+  };
+
+  const toast = (msg, type="ok") => {
+    const chip = $("#chipEstado");
+    chip.textContent = msg || "";
+    chip.style.color = type==="err" ? "#b91c1c" : "#064e3b";
+  };
+
+  const noImplementado = () => {
+    alert("Demo visual — esta sección es decorativa en esta maqueta.");
+  };
+
+  const logout = (ev) => {
+    ev.preventDefault();
+    if(confirm("¿Cerrar sesión?")) location.reload();
+  };
+
+  // ---------- Estado ----------
+  let pacientes = [];
+
+  const cargar = () => {
+    try{
+      pacientes = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    }catch{ pacientes = []; }
+  };
+
+  const guardar = () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(pacientes));
+  };
+
+  // ---------- Render ----------
+  const renderTabla = (filtro="") => {
+    const tb = $("#tbl tbody");
+    tb.innerHTML = "";
+    const text = (s) => (s??"").toString().toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,"");
+    const f = text(filtro);
+
+    pacientes
+      .map((p, i)=> ({...p, _idx:i}))
+      .filter(p=>{
+        if(!f) return true;
+        return [p.id,p.nombre,p.apellidos,p.correo,p.telefono].some(v=>text(v).includes(f));
+      })
+      .forEach(p=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><span class="tag">${p.id||""}</span></td>
+          <td>${(p.nombre||"")+" "+(p.apellidos||"")}</td>
+          <td>${edadDesdeFecha(p.fechaNac)}</td>
+          <td>${p.sexo||""}</td>
+          <td>${p.telefono||""}</td>
+          <td>${p.correo||""}</td>
+          <td>${p.seguro||""}</td>
+          <td class="actions">
+            <a href="#" class="link" data-act="edit" data-i="${p._idx}">Editar</a>
+            <a href="#" class="link" data-act="del"  data-i="${p._idx}" style="color:#b91c1c;border-color:#fca5a5">Eliminar</a>
+          </td>
+        `;
+        tb.appendChild(tr);
+      });
+
+    // Acciones fila
+    $$("#tbl a.link").forEach(a=>{
+      a.addEventListener("click", (e)=>{
+        e.preventDefault();
+        const i = +a.dataset.i;
+        if(a.dataset.act === "edit") cargarEnFormulario(i);
+        if(a.dataset.act === "del") eliminar(i);
+      })
+    });
+  };
+
+  // ---------- Form ----------
+  const frm = $("#frmPaciente");
+  const campos = [
+    "id","nombre","apellidos","fechaNac","sexo","telefono","correo",
+    "direccion","seguro","padecimientos","alergias","contactoNombre","contactoTel"
+  ];
+
+  const leerForm = () => {
+    const data = {};
+    campos.forEach(k => data[k] = $("#"+k).value.trim());
+    return data;
+  };
+
+  const escribirForm = (p) => {
+    campos.forEach(k => $("#"+k).value = p?.[k] ?? "");
+  };
+
+  let idxEdit = null;
+
+  const limpiar = () => {
+    frm.reset();
+    idxEdit = null;
+    $("#btnGuardar").textContent = "Guardar Paciente";
+    toast("");
+  };
+
+  const cargarEnFormulario = (i) => {
+    const p = pacientes[i];
+    if(!p) return;
+    idxEdit = i;
+    escribirForm(p);
+    $("#btnGuardar").textContent = "Actualizar Paciente";
+    window.scrollTo({top: frm.offsetTop - 20, behavior:"smooth"});
+    toast("Editando registro…");
+  };
+
+  const eliminar = (i) => {
+    const p = pacientes[i];
+    if(!p) return;
+    if(confirm(`¿Eliminar a ${p.nombre} ${p.apellidos}?`)){
+      pacientes.splice(i,1);
+      guardar(); renderTabla($("#txtBuscar").value);
+      toast("Paciente eliminado", "ok");
+    }
+  };
+
+  frm.addEventListener("submit", (e)=>{
+    e.preventDefault();
+    if(!frm.reportValidity()) return;
+
+    const p = leerForm();
+
+    // Validaciones simples extra
+    if(p.correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.correo)){
+      toast("Correo inválido", "err"); $("#correo").focus(); return;
+    }
+
+    // ¿nuevo o edición?
+    if(idxEdit===null){
+      // Evitar duplicados por cédula
+      if(p.id && pacientes.some(x=>x.id===p.id)){
+        toast("Ya existe un registro con esa cédula", "err");
+        $("#id").focus(); return;
+      }
+      pacientes.unshift(p);
+      toast("Paciente guardado", "ok");
+    }else{
+      pacientes[idxEdit] = p;
+      toast("Registro actualizado", "ok");
+    }
+    guardar(); renderTabla($("#txtBuscar").value); limpiar();
+  });
+
+  $("#btnLimpiar").addEventListener("click", limpiar);
+
+  // Buscar
+  $("#txtBuscar").addEventListener("input", e => renderTabla(e.target.value));
+
+  // Exportar JSON
+  $("#btnExportar").addEventListener("click", ()=>{
+    const blob = new Blob([JSON.stringify(pacientes, null, 2)], {type:"application/json;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement("a"), { href:url, download:"pacientes.json" });
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  });
+
+  // Borrar todos
+  $("#btnBorrarTodo").addEventListener("click", ()=>{
+    if(!pacientes.length) return alert("No hay registros para borrar.");
+    if(confirm("¿Vaciar todos los registros de pacientes? Esta acción no se puede deshacer.")){
+      pacientes = []; guardar(); renderTabla(); toast("Registros vaciados");
+    }
+  });
+
+  // Init
+  cargar(); renderTabla();
+</script>
+</body>
+</html>

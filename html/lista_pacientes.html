@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Pacientes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        button {
+            margin: 2px;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Lista de Pacientes</h2>
+
+    <form id="formPaciente">
+        <input type="text" id="nombre" placeholder="Nombre del paciente" required>
+        <input type="number" id="edad" placeholder="Edad" required>
+        <input type="text" id="diagnostico" placeholder="Diagnóstico" required>
+        <button type="submit">Agregar Paciente</button>
+    </form>
+
+    <table id="tablaPacientes">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Edad</th>
+                <th>Diagnóstico</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Filas de pacientes aquí -->
+        </tbody>
+    </table>
+
+    <script>
+        const form = document.getElementById('formPaciente');
+        const tabla = document.getElementById('tablaPacientes').querySelector('tbody');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const nombre = document.getElementById('nombre').value;
+            const edad = document.getElementById('edad').value;
+            const diagnostico = document.getElementById('diagnostico').value;
+
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td>${nombre}</td>
+                <td>${edad}</td>
+                <td>${diagnostico}</td>
+                <td>
+                    <button onclick="editarPaciente(this)">Editar</button>
+                    <button onclick="eliminarPaciente(this)">Eliminar</button>
+                </td>
+            `;
+            tabla.appendChild(fila);
+
+            form.reset();
+        });
+
+        function eliminarPaciente(boton) {
+            boton.closest('tr').remove();
+        }
+
+        function editarPaciente(boton) {
+            const fila = boton.closest('tr');
+            document.getElementById('nombre').value = fila.cells[0].innerText;
+            document.getElementById('edad').value = fila.cells[1].innerText;
+            document.getElementById('diagnostico').value = fila.cells[2].innerText;
+            fila.remove();
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Administrar Horarios Médicos</title>
+  <!-- Adaptación para dispositivos móviles -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Carga CSS de Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    /* Estilo visual para cada franja generada */
+    .franja-horaria {
+      border: 1px solid #ccc;
+      padding: 6px 12px;
+      border-radius: 5px;
+      background-color: #f8f9fa;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+  <!-- Contenedor principal del panel -->
+  <div class="container mt-5">
+    <div class="card shadow-sm">
+      
+      <!-- Encabezado con título -->
+      <div class="card-header bg-warning text-white text-center">
+        <h4>Administración de Horarios por Médico</h4>
+      </div>
+
+      <div class="card-body">
+        <!-- Formulario para crear horarios -->
+        <form id="formHorario">
+          
+          <!-- Selección de médico -->
+          <div class="mb-3">
+            <label for="medico" class="form-label">Nombre del Médico</label>
+            <select class="form-select" id="medico" required>
+              <option value="">Selecciona un médico...</option>
+              <option value="Dra. Ana Rodríguez">Dra. Ana Rodríguez</option>
+              <option value="Dr. Luis Gómez">Dr. Luis Gómez</option>
+              <option value="Dra. Carla Mendez">Dra. Carla Méndez</option>
+              <option value="Dr. Jorge Castro">Dr. Jorge Castro</option>
+            </select>
+          </div>
+
+          <!-- Selección de horario de atención -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="horaInicio" class="form-label">Hora de inicio</label>
+              <input type="time" class="form-control" id="horaInicio" required>
+            </div>
+            <div class="col-md-6">
+              <label for="horaFin" class="form-label">Hora de fin</label>
+              <input type="time" class="form-control" id="horaFin" required>
+            </div>
+          </div>
+
+          <!-- Día laboral seleccionado -->
+          <div class="mb-3">
+            <label for="dias" class="form-label">Días laborables (solo lunes a viernes)</label>
+            <select class="form-select" id="dias">
+              <option value="lunes">Lunes</option>
+              <option value="martes">Martes</option>
+              <option value="miércoles">Miércoles</option>
+              <option value="jueves">Jueves</option>
+              <option value="viernes">Viernes</option>
+            </select>
+          </div>
+
+          <!-- Botón para procesar el horario -->
+          <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-warning">Generar Horarios</button>
+          </div>
+        </form>
+
+        <!-- Contenedor donde se mostrarán las franjas generadas -->
+        <div id="resultadoHorarios" class="mt-4">
+          <h5 class="text-center text-success">Franjas disponibles</h5>
+          <div id="franjas" class="mt-2"></div>
+        </div>
+      </div>
+
+      <!-- Botón de regreso al panel de administración -->
+      <div class="card-footer text-center">
+        <a href="panel_administrador.html" class="btn btn-outline-secondary">Volver al Panel</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (necesario para componentes como dropdowns) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Script personalizado para generar franjas horarias -->
+  <script>
+    document.getElementById("formHorario").addEventListener("submit", function(e) {
+      e.preventDefault(); // Evita que el formulario recargue la página
+
+      const inicio = document.getElementById("horaInicio").value;
+      const fin = document.getElementById("horaFin").value;
+      const franjasContainer = document.getElementById("franjas");
+      franjasContainer.innerHTML = ""; // Limpia resultados anteriores
+
+      // Convierte hora de inicio y fin a objetos Date (día fijo 2000-01-01)
+      const horaInicio = new Date("2000-01-01T" + inicio);
+      const horaFin = new Date("2000-01-01T" + fin);
+      let actual = new Date(horaInicio);
+
+      // Genera franjas de 30 minutos hasta alcanzar horaFin
+      while (actual < horaFin) {
+        const siguiente = new Date(actual.getTime() + 30 * 60000); // +30 minutos
+
+        // Dentro de cada franja de 30 mins se simulan 2 posibles citas
+        for (let i = 1; i <= 2; i++) {
+          const franjaTexto = `${actual.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${siguiente.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} (Cita ${i})`;
+          const franjaDiv = document.createElement("div");
+          franjaDiv.className = "franja-horaria";
+          franjaDiv.textContent = franjaTexto;
+          franjasContainer.appendChild(franjaDiv);
+        }
+
+        actual = siguiente; // Avanza a la siguiente franja
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html> 
+<html lang="es"> 
+<head>
+  <meta charset="UTF-8"> 
+  <title>Configurar Servicios Médicos</title> 
+  <meta name="viewport" content="width=device-width, initial-scale=1"> 
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light"> <!-- Estilo de fondo claro para la interfaz -->
+
+  <div class="container mt-5"> <!-- Contenedor principal con margen superior -->
+    <div class="card shadow-sm"> <!-- Tarjeta con sombra para presentar el contenido -->
+
+      <!-- Encabezado del formulario -->
+      <div class="card-header bg-secondary text-white text-center">
+        <h4>Gestión de Servicios Médicos</h4>
+      </div>
+
+      <div class="card-body">
+        <!-- Formulario para agregar nuevos servicios -->
+        <form id="formServicio" class="mb-4">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="nombreServicio" class="form-label">Nombre del Servicio</label>
+              <input type="text" class="form-control" id="nombreServicio" required>
+            </div>
+            <div class="col-md-6">
+              <label for="descripcionServicio" class="form-label">Descripción breve</label>
+              <input type="text" class="form-control" id="descripcionServicio" required>
+            </div>
+          </div>
+
+          <!-- Detalles adicionales: especialidad, duración, costo -->
+          <div class="row mt-3">
+            <div class="col-md-4">
+              <label for="especialidad" class="form-label">Especialidad asociada</label>
+              <select class="form-select" id="especialidad" required>
+                <option value="">Selecciona una especialidad...</option>
+                <option value="Medicina General">Medicina General</option>
+                <option value="Cardiología">Cardiología</option>
+                <option value="Pediatría">Pediatría</option>
+                <option value="Dermatología">Dermatología</option>
+                <option value="Dermatología">Quiropodia</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label for="duracion" class="form-label">Duración estimada (min)</label>
+              <input type="number" class="form-control" id="duracion" value="30" min="10">
+            </div>
+            <div class="col-md-4">
+              <label for="costo" class="form-label">Costo estimado</label>
+              <input type="number" class="form-control" id="costo" placeholder="₡" min="0">
+            </div>
+          </div>
+
+          <!-- Botón para agregar servicio -->
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-secondary">Agregar Servicio</button>
+          </div>
+        </form>
+
+        <!-- Tabla que muestra los servicios registrados -->
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Servicio</th>
+                <th>Especialidad</th>
+                <th>Duración</th>
+                <th>Costo</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaServicios">
+              <!-- Servicios preexistentes en la tabla -->
+              <tr>
+                <td>Consulta General</td>
+                <td>Medicina General</td>
+                <td>30 min</td>
+                <td>₡5000</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-warning">Editar</button>
+                  <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Evaluación Cardiológica</td>
+                <td>Cardiología</td>
+                <td>45 min</td>
+                <td>₡8000</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-warning">Editar</button>
+                  <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Área para mostrar mensajes de confirmación -->
+        <div id="mensajeServicio" class="mt-3 text-center"></div>
+      </div>
+
+      <!-- Pie de tarjeta con botón de regreso al panel -->
+      <div class="card-footer text-center">
+        <a href="panel_administrador.html" class="btn btn-outline-secondary">Volver al Panel</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS para componentes dinámicos -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Script que agrega el nuevo servicio a la tabla -->
+  <script>
+    document.getElementById("formServicio").addEventListener("submit", function(e) {
+      e.preventDefault(); // Previene el envío tradicional del formulario
+
+      // Captura datos ingresados por el usuario
+      const nombre = document.getElementById("nombreServicio").value;
+      const especialidad = document.getElementById("especialidad").value;
+      const duracion = document.getElementById("duracion").value + " min";
+      const costo = "₡" + document.getElementById("costo").value;
+
+      // Crea una nueva fila en la tabla
+      const nuevaFila = document.createElement("tr");
+      nuevaFila.innerHTML = `
+        <td>${nombre}</td>
+        <td>${especialidad}</td>
+        <td>${duracion}</td>
+        <td>${costo}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-warning">Editar</button>
+          <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+        </td>
+      `;
+
+      // Agrega la fila a la tabla de servicios
+      document.getElementById("tablaServicios").appendChild(nuevaFila);
+
+      // Muestra mensaje de éxito
+      const mensaje = document.getElementById("mensajeServicio");
+      mensaje.textContent = "✅ Servicio agregado correctamente.";
+      mensaje.classList.add("text-success");
+
+      // Limpia el formulario
+      this.reset();
+    });
+  </script>
+</body>
+</html>
