@@ -1,55 +1,40 @@
 <?php
 session_start();
 
-// Conexion BD
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "clinica";
-$conn = new mysqli($servername, $username, $password, $dbname);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  $usuario = $_POST['usuario'];
+  $clave = $_POST['clave'];
 
-if ($conn->connect_error) {
-  die("Conexion fallida: " . $conn->connect_error);
+  // Usuario definido por el admin (puedes cambiarlo)
+  if ($usuario === "admin" && $clave === "12345678") {
+    $_SESSION['usuario'] = $usuario;
+    header("Location: index.php");
+    exit();
+  } else {
+    $error = "Credenciales incorrectas";
+  }
 }
-
-// Recibir datos
-$usuario = trim($conn->real_escape_string($_POST['usuario']));// para medicos: cedula
-$contrasena = trim($conn->real_escape_string($_POST['contrasena']));
-$rol = trim($conn->real_escape_string($_POST['rol']));
-
-
-switch ($rol) {
-  case "medico":
-    $sql = "SELECT * FROM medicos WHERE cedula = '$usuario' AND contrasena = '$contrasena'";
-    $panel = "panel_medico.php";
-    break;
-
-  case "admin":
-    $sql = "SELECT * FROM admins WHERE usuario = '$usuario' AND contrasena = '$contrasena'";
-    $panel = "panel_administrador.html";
-    break;
-
-  default:
-    echo "Rol no válido.";
-    exit;
-}
-
-$result = $conn->query($sql);
-
-if(!$result) {
-    die("Error en la consulta: ".$conn->error);
-}
-
-if ($result->num_rows > 0) {
-  $row = $result->fetch_assoc();
-  $_SESSION['usuario'] = $rol === 'medico' ? $row['cedula'] : $row['usuario'];
-  $_SESSION['rol'] = $rol;
-
-  header("Location: $panel");
-  exit;
-} else {
-  echo "❌ Usuario o contraseña incorrectos.";
-}
-
-$conn->close();
 ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ingreso - Consultorio</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container py-5">
+  <div class="col-md-4 mx-auto card shadow-sm p-4">
+    <h4 class="text-center mb-4">Acceso al sistema</h4>
+    <?php if(isset($error)): ?>
+      <div class="alert alert-danger"><?=$error?></div>
+    <?php endif; ?>
+    <form method="POST">
+      <input type="text" name="usuario" class="form-control mb-3" placeholder="Usuario" required>
+      <input type="password" name="clave" class="form-control mb-3" placeholder="Clave (8 caracteres)" minlength="3" required>
+      <button class="btn btn-primary w-100">Ingresar</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>
